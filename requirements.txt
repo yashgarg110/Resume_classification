@@ -2,3 +2,4 @@ pypdf
 streamlit
 pandas
 docx2pdf
+scikit-learn
