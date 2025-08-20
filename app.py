@@ -6,8 +6,14 @@ import re
 import streamlit as st
 
 # Load models
-word_vector = pickle.load(open("tfidf.pkl", "rb"))
-model = pickle.load(open("model.pkl", "rb"))
+@st.cache_resource
+def load_model():
+    model = pickle.load(open("model.pkl", "rb"))
+    vectorizer = pickle.load(open("tfidf.pkl", "rb"))
+
+    return model, vectorizer
+
+model, vectorizer = load_model()
 
 def cleanResume(txt):
     cleanText = re.sub('http\S+\s', ' ', txt)
@@ -60,7 +66,7 @@ def categorize_resumes(uploaded_files, output_directory):
             text = page.extract_text()
             cleaned_resume = cleanResume(text)
 
-            input_features = word_vector.transform([cleaned_resume])
+            input_features = vectorizer.transform([cleaned_resume])
             prediction_id = model.predict(input_features)[0]
             category_name = category_mapping.get(prediction_id, "Unknown")
             
